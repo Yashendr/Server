@@ -2,6 +2,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 
 import javax.sound.midi.Receiver;
 
@@ -10,15 +13,26 @@ public class server {
     static ServerSocket server_socket;
     static ObjectOutputStream output_stream;
     static ObjectInputStream input_stream;
+    public static ArrayList<SocketChannel> list;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
       
-        server_socket = new ServerSocket(6666);
-        Socket socket = server_socket.accept(); ;
-         
-         socket.close();
-         server_socket.close();
-    
+        ServerSocketChannel server_channel = ServerSocketChannel.open();
+        server_channel.configureBlocking(false);
+        server_channel.socket().bind(new InetSocketAddress("localhost",9999));
+        list = new ArrayList<SocketChannel>();
+        int i =0;
+
+        
+        while(true){
+            SocketChannel client_channel =
+            server_channel.accept();
+            list.add(client_channel);
+            System.out.println("Connected user\t" +i);
+            i++;
+        
+            //do something with socketChannel...
+        }
 
         
 
