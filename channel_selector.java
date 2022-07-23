@@ -45,6 +45,10 @@ public class channel_selector implements Runnable {
                         System.out.println(new_key + " " + server_key);
                         clients.add(username, new_key);
                     }
+
+                    if(key.isReadable()){
+                        Send_Rec.receive((SocketChannel)key.channel());
+                    }
     
                     key_checker.remove();
                 }
