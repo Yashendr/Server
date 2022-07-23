@@ -35,7 +35,7 @@ public class server {
         Thread thread_1 = new Thread(seltor);
         thread_1.start();
         while(true) {
-            Set<SelectionKey> keys = lock(selector.selectedKeys());
+           
         }
     
     
