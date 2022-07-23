@@ -20,9 +20,8 @@ public class Client {
       socketChannel.connect(new InetSocketAddress("localhost",9999));
       String send_mes = "";
       while (true){
-        Scanner send  =  new Scanner(System.in);
-        send_mes = send.next();
-        Send_Rec.send(send_mes, socketChannel);
+
+        Send_Rec.send("hello", socketChannel);
         
       }
     
