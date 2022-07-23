@@ -1,6 +1,5 @@
 import javax.swing.*;
 
-import tut1.Message;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,8 +18,11 @@ public class Client {
    public static void main(String args[]) throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException  {
       socketChannel = SocketChannel.open();
       socketChannel.connect(new InetSocketAddress("localhost",9999));
+      String send_mes = "";
       while (true){
         Scanner send  =  new Scanner(System.in);
+        send_mes = send.next();
+        Send_Rec.send(send_mes, socketChannel);
         
       }
     

@@ -2,13 +2,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 
 import javax.sound.midi.Receiver;
 
-import tut1.Message;  
 public class server {
     static ServerSocket server_socket;
     static ObjectOutputStream output_stream;
@@ -22,15 +23,17 @@ public class server {
         server_channel.socket().bind(new InetSocketAddress("localhost",9999));
         list = new ArrayList<SocketChannel>();
         int i =0;
-
+        String mes = "";
         
         while(true){
-            SocketChannel client_channel =
-            server_channel.accept();
-            list.add(client_channel);
-            System.out.println("Connected user\t" +i);
-            i++;
-        
+            SocketChannel client_channel = server_channel.accept() ;
+            while( client_channel!= null){
+                recieve_messages( client_channel);
+            
+              //  System.out.println("Connected user\t" +i +client_channel.toString());
+          
+                i++;
+            }
             //do something with socketChannel...
         }
 
@@ -40,23 +43,9 @@ public class server {
 
     }
 
-    public static void recieve_messages() throws ClassNotFoundException, IOException{
+    public static void recieve_messages(SocketChannel client_channel) throws ClassNotFoundException, IOException{
         Message mess = null; 
-        while (true) {
-            Thread thread_new = new Thread();
-            thread_new.start();
-            Socket socket = server_socket.accept();
-            output_stream = new ObjectOutputStream(socket.getOutputStream());
-            input_stream = new ObjectInputStream(socket.getInputStream());
-
-            while (true) {
-                mess=  (Message) input_stream.readObject();
-
-                if(!mess.equals(null))
-                System.out.println(mess.get_username() +": " +mess.get_message());
-                System.out.println("here");
-            }
-        }
+       System.out.println(Send_Rec.receive(client_channel) +"here"); 
 
 
     }
