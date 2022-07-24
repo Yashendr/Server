@@ -13,6 +13,7 @@ public class Send_Rec {
             System.out.println("here1");
         } catch (IOException e) {
             // TODO Auto-generated catch block
+            
            System.out.println("key gone");
         }
     }
@@ -32,10 +33,13 @@ public class Send_Rec {
 
     public static String receive(SocketChannel sock_chan,int i) throws IOException  {
         ByteBuffer num =  ByteBuffer.allocate(1000);
+        num.clear();
         String data = "";
         while(sock_chan.read(num) == -1){
 
         }
+
+            System.out.println(num.position(0).toString());
  
             data += charset.decode(num.position(0)).toString();
         
