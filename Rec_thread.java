@@ -18,7 +18,11 @@ public class Rec_thread implements Runnable  {
         while(true){
             //System.out.println("her1e");
             try {
-                System.out.println(Send_Rec.receive(sock_chan));
+                String mess = Send_Rec.receive(sock_chan);
+                if(mess.equals("")){}
+                else{
+                    System.out.println(mess);
+                }
             } catch (IOException e) {
                 System.out.println("hii");
             }

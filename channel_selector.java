@@ -25,9 +25,11 @@ public class channel_selector implements Runnable {
     public void run() {
         while (active) {
             int ready = 0;
-    
+            SelectionKey key = null;
             try {
                 ready = selector.selectNow();
+               // System.out.println(ready);
+
 
                 if(ready == 0) continue;
                
@@ -35,13 +37,12 @@ public class channel_selector implements Runnable {
                 
 
                 Iterator<SelectionKey> key_checker =  keys.iterator();
-                
+
                 while(key_checker.hasNext()) {
                     Set<SelectionKey> keyall = (selector.keys());
-                    SelectionKey key = key_checker.next();
-                  
+                     key = key_checker.next();
                     if(!key.isValid()) {   
-                        //System.out.println("AS"); 
+                        
                          continue;
                
                      }
@@ -59,6 +60,12 @@ public class channel_selector implements Runnable {
 
                     else if(key.isReadable() && key != server_key) {
                       String message = Send_Rec.receive((SocketChannel)key.channel());
+
+                      if(message.equals("")){
+                        key_checker.remove();
+
+                        continue;
+                      }
                       //System.out.println("GET");
                      // Set<SelectionKey> keyall = (selector.keys());
                       Iterator<SelectionKey> allkey_checker =  keyall.iterator();
@@ -68,8 +75,10 @@ public class channel_selector implements Runnable {
                        
                         if (!my_key.equals(key) && my_key != server_key){
                             Send_Rec.send(message,(SocketChannel)my_key.channel());
+        
+                        }else {
+                            System.out.println("here");
                         }
-                        allkey_checker.remove();
                       }
                      
                     } 
@@ -78,10 +87,11 @@ public class channel_selector implements Runnable {
                 }
 
             } catch (Exception IOException) {
-                System.out.println("Stuck");
+                System.out.println(key.equals(server_key));
+
             }
 
-           
+
 
         }
         

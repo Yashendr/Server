@@ -26,13 +26,18 @@ public class Client {
       Rec_thread recer = new Rec_thread(socketChannel,lock);
       Thread Thread_recer = new Thread(recer);
       Thread_recer.start();
-      while (true){
+      if (args[0].contains("1")){
+          while (true){
          
           Scanner util = new Scanner(System.in);
           String next = util.nextLine();
           Send_Rec.send(next, socketChannel);
+         } 
       }
-    
+      while(true){
+        String mes = (Send_Rec.receive(socketChannel));
+        System.out.println(mes);
+      }
     
     }
 
