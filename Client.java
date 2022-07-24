@@ -9,20 +9,30 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class Client {
    static  SocketChannel socketChannel = null;
    public static String username = "absoul";
+   static ReentrantLock lock;  
    public static void main(String args[]) throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException  {
       socketChannel = SocketChannel.open();
       socketChannel.connect(new InetSocketAddress("localhost",9999));
+      Send_Rec.send("hello", socketChannel);
       String send_mes = "";
+      Rec_thread recer = new Rec_thread(socketChannel,lock);
+      Thread Thread_recer = new Thread(recer);
+      Thread_recer.start();
       while (true){
-
-        Send_Rec.send("hello", socketChannel);
-        
+         
+          Scanner util = new Scanner(System.in);
+          String next = util.nextLine();
+          lock.lock(); 
+          Send_Rec.send(next, socketChannel);
+          lock.unlock();
       }
     
     

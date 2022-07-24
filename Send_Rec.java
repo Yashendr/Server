@@ -12,12 +12,15 @@ public class Send_Rec {
     }
 
     public static String receive(SocketChannel sock_chan) throws IOException  {
-        ByteBuffer num =  ByteBuffer.allocate(25000);
+        ByteBuffer num =  ByteBuffer.allocate(1000);
+        String data = "";
         while(sock_chan.read(num) == -1){
        
         }
-       
-        String data = charset.decode(num.position(0)).toString();
+ 
+            data += charset.decode(num.position(0)).toString();
+        
+        
         return data;
     }
 }
