@@ -30,9 +30,7 @@ public class Client {
          
           Scanner util = new Scanner(System.in);
           String next = util.nextLine();
-          lock.lock(); 
           Send_Rec.send(next, socketChannel);
-          lock.unlock();
       }
     
     

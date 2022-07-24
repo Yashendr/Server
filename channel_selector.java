@@ -11,7 +11,8 @@ public class channel_selector implements Runnable {
     private SelectionKey server_key;
     private ServerSocketChannel server_channel;
     private clients_connected clients;
-    static ReentrantLock lock;  
+    static ReentrantLock lock;
+    private boolean server_acceptor = true;  
     public channel_selector(Selector selector, SelectionKey server_key,
     ServerSocketChannel server_channel, clients_connected clients, ReentrantLock lock  ) throws IOException {
         this.selector = selector;
@@ -40,30 +41,27 @@ public class channel_selector implements Runnable {
                     SelectionKey key = key_checker.next();
                   
                     if(!key.isValid()) {   
-                        System.out.println("AS"); 
+                        //System.out.println("AS"); 
                          continue;
                
                      }
                     if(key == server_key){
-                       
                         SocketChannel new_connection = server_channel.accept();
-                        new_connection.configureBlocking(false);
-
-                        int jobs = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
-                        SelectionKey new_key = new_connection.register(selector, jobs);
-                        if(new_key.channel() != null){
+                        if(new_connection != null){
+                            new_connection.configureBlocking(false);
+                            int jobs = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+                            SelectionKey new_key = new_connection.register(selector, jobs);
                             String username = Send_Rec.receive(new_connection);
                             System.out.println(new_key + " " + server_key);
                             clients.add(username, new_key);
                         }
-                        
                     }
 
                     else if(key.isReadable() && key != server_key) {
                       String message = Send_Rec.receive((SocketChannel)key.channel());
-                      System.out.println("GET");
+                      //System.out.println("GET");
                      // Set<SelectionKey> keyall = (selector.keys());
-                      Iterator<SelectionKey> allkey_checker =  keys.iterator();
+                      Iterator<SelectionKey> allkey_checker =  keyall.iterator();
                       
                       while(allkey_checker.hasNext()) {
                         SelectionKey my_key = allkey_checker.next();
@@ -80,7 +78,7 @@ public class channel_selector implements Runnable {
                 }
 
             } catch (Exception IOException) {
-            
+                System.out.println("Stuck");
             }
 
            

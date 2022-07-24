@@ -16,12 +16,9 @@ public class Rec_thread implements Runnable  {
     @Override
     public void run(){
         while(true){
-            System.out.println("her1e");
-
+            //System.out.println("her1e");
             try {
-                lock.lock();
                 System.out.println(Send_Rec.receive(sock_chan));
-                lock.unlock();
             } catch (IOException e) {
                 System.out.println("hii");
             }
