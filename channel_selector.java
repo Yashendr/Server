@@ -68,6 +68,15 @@ public class channel_selector implements Runnable {
 
                         continue;
                       }
+                      if (message.contains("!!Disconnect")){
+                        String user = message.substring(13).trim();
+                        clients.remove(user);
+                        if (key != null){
+                            key.cancel();
+                        }
+                        key_checker.remove();
+                        continue;
+                      }
                       if (message.trim().charAt(0) == '$')  {
                             String user = "";
                             int i = 1; 
