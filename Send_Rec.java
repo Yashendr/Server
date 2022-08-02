@@ -10,7 +10,6 @@ public class Send_Rec {
         ByteBuffer send_data = ByteBuffer.wrap(sent.getBytes(charset));
         try {
             sock_chan.write(send_data);
-            System.out.println("here1");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             
@@ -41,7 +40,7 @@ public class Send_Rec {
 
             System.out.println(num.position(0).toString());
  
-            data += charset.decode(num.position(0)).toString();
+            data = charset.decode(num.position(0)).toString();
         
         
         return data;
