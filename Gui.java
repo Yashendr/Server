@@ -1,4 +1,6 @@
+import java.io.IOException;
 import java.nio.channels.SocketChannel;
+import java.util.Scanner;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -16,10 +18,11 @@ public class Gui extends javax.swing.JFrame {
      */
     public SocketChannel sock_chan;
     public String username  = "";
-    public Gui(SocketChannel sock_chan,String username) {
+    public Gui(SocketChannel sock_chan,String username,String servermes) {
         this.sock_chan = sock_chan; 
         initComponents();
         this.username = username;
+        UsersConnected.setText(servermes);
     }
 
 
@@ -49,7 +52,12 @@ public class Gui extends javax.swing.JFrame {
         Send.setText("Send");
         Send.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SendActionPerformed(evt);
+                try {
+                    SendActionPerformed(evt);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -105,12 +113,26 @@ public class Gui extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
-    private void SendActionPerformed(java.awt.event.ActionEvent evt) {
+    private void SendActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
         System.out.println(Text.getText());  
+        int i = jTextArea1.getText().trim().length();
         if(Text.getText().trim().charAt(0) == '@') {
             Send_Rec.send( "$"+username + " " + Text.getText().trim(),sock_chan);
+            System.out.println("$"+username + " ");
         } else {                         
             Send_Rec.send( "&"+username + " " + Text.getText().trim(),sock_chan);
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    
+        int k = jTextArea1.getText().trim().length();
+        if(k == i){
+            System.out.println("Server shutdown");
+            System.exit(0);
         }
     }                                    
   
@@ -158,6 +180,24 @@ public class Gui extends javax.swing.JFrame {
         jTextArea1.append( " " +hello +"\n");
     }
 
+    public void add_user(String hello) {
+        UsersConnected.append( "" +hello +"\n");
+    }
+
+    public void Update_ds( String username){
+       String k = UsersConnected.getText();
+       String next = "";
+       String fin_txt = "";
+       Scanner text = new Scanner (k);
+       while(text.hasNext()) {
+            next = text.nextLine();
+            if(!next.contains(username)){
+                fin_txt += next +"\n";
+            }
+       }
+       UsersConnected.setText(fin_txt);
+
+    }
     // Variables declaration - do not modify                     
     private javax.swing.JButton Exit;
     private javax.swing.JButton Send;

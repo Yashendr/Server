@@ -26,12 +26,14 @@ public class server {
     static ReentrantLock lock;  
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         
-        lock = new ReentrantLock();
+      
 
         ServerSocketChannel server_channel = ServerSocketChannel.open();
         server_channel.configureBlocking(false);
         server_channel.socket().bind(new InetSocketAddress("localhost",9999));
         server_key = server_channel.register(selector = Selector.open(), SelectionKey.OP_ACCEPT);
+        
+
         clients_connected clients = new clients_connected();
         channel_selector seltor = new channel_selector (selector,server_key,server_channel,clients,lock);
         Thread thread_1 = new Thread(seltor);

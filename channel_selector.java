@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.*;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.nio.channels.*;
@@ -73,9 +74,44 @@ public class channel_selector implements Runnable {
                     int jobs = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
                     SelectionKey new_key = new_connection.register(selector, jobs);
                     Thread.sleep(10);
-                    String username = Send_Rec.receive(new_connection,1).trim();    
-                    clients.add(username, new_key);
+                    String username = Send_Rec.receive(new_connection,1).trim();
+                    try {
+                        if (clients.key(username) != null) {
+                            Send_Rec.send("server : duplicate username retry" ,(SocketChannel)new_key.channel());
+                            new_key.cancel();
+                            return;
+                        } else {
+                            clients.add(username, new_key);
+                           
+                            System.out.println(username+" joined");
+                            String usernames = "";
+                            for(Map.Entry entry: clients.clients.entrySet()){
+                               
+                                usernames += entry.getKey() +"\n";
+         
+                                
+                            }
+                            Send_Rec.send(usernames ,(SocketChannel)new_key.channel());
+
+                        }
+                    } catch (Exception e) {
+                        
+                    }
                     
+                       
+                    
+                    
+                    Set<SelectionKey> keyall = (selector.keys());
+                    Iterator<SelectionKey> allkey_checker =  keyall.iterator();
+                    while(allkey_checker.hasNext()) {
+                        SelectionKey my_key = allkey_checker.next();
+                        if (!my_key.equals(new_key) && my_key != server_key)  {
+                            Send_Rec.send("server : " + username +" has joined.",(SocketChannel)my_key.channel());
+
+                        } else {
+                            System.out.println("here");
+                            }   
+                    }
 
                 }
             } catch (Exception e) {
@@ -99,8 +135,21 @@ public class channel_selector implements Runnable {
 
         if (message.contains("!!Disconnect")){
             String user = message.substring(13).trim();
+            System.out.println("bruh");
             clients.remove(user);
-        
+            
+           
+            Iterator<SelectionKey> allkey_checker =  keyall.iterator();
+            while(allkey_checker.hasNext()) {
+                SelectionKey my_key = allkey_checker.next();
+                if (!my_key.equals(key) && my_key != server_key)  {
+                    Send_Rec.send("server : " + user +" has left.",(SocketChannel)my_key.channel());
+
+                 } else {
+                    System.out.println("here");
+                 }
+            }
+            
         if (key != null){
             key.cancel();
         }
@@ -126,7 +175,7 @@ public class channel_selector implements Runnable {
 
 
             
-                if (!my_key.equals(key) && my_key != server_key)  {
+                if ( my_key != server_key)  {
                     Send_Rec.send(user+ ": "+ message.substring(i),(SocketChannel)my_key.channel());
 
                  } else {
@@ -163,6 +212,7 @@ public class channel_selector implements Runnable {
             
             if(!rec_chan.equals(null) && !Send_user.equals(user)) {
                 Send_Rec.send("Private message "+ Send_user +": "+message.substring(i), (rec_chan));
+                Send_Rec.send("Private message "+ Send_user +": "+message.substring(i), (SocketChannel)clients.key(Send_user).channel());
             }
         } catch (Exception e) {
             Send_Rec.send("User does not exist",(SocketChannel)clients.key(Send_user).channel());

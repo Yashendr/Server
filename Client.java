@@ -19,24 +19,50 @@ public class Client {
    public static String username = "absoul";
    static ReentrantLock lock;  
    public static void main(String args[]) throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException  {
-      socketChannel = SocketChannel.open();
-      socketChannel.connect(new InetSocketAddress("localhost",9999));
       if (args[0].contains("1")){
-        Send_Rec.send("absoul", socketChannel);
         username = "absoul";
-      } else if (args[0].contains("1")) {
-        Send_Rec.send("ah", socketChannel);
-        username = "ah";
-      } else {
+      } else if (args[0].contains("0")) {
+        username = "maker";
+      } else if (args[0].contains("2")) {
+        username = "foxis";
+      } 
+      else {
         set_username();
-        Send_Rec.send(username, socketChannel);
+        System.out.println(username.trim().length());
+
+      }  
+
+
+      try {
+        socketChannel = SocketChannel.open();
+        socketChannel.connect(new InetSocketAddress("localhost",9999));
+
+      } catch (Exception e) {
+          socketChannel.close();
+          System.out.println("Server does not exist.");
+          System.exit(0);
 
       }
+      
+      //socketChannel.connect(new InetSocketAddress("25.68.194.114",4200));
+     // server_channel.socket().bind(new InetSocketAddress("localhost",9999));
+     Send_Rec.send(username, socketChannel);
+   
+      Thread.sleep(100);
+      String servermes = Send_Rec.receive(socketChannel);
+      if(servermes.contains("server : duplicate username retry")){
+        socketChannel.close();
+        System.out.println("Username taken choose another.");
+        System.exit(0);
+      }
+      
+
+
       String send_mes = "";
       disconector disc = new disconector(socketChannel, username);
-      Thread dis = new Thread();
+      Thread dis = new Thread(disc);
       Runtime.getRuntime().addShutdownHook(dis);
-      Gui client_side = new Gui(socketChannel,username);
+      Gui client_side = new Gui(socketChannel,username,servermes);
       client_side.setVisible(true);
       Rec_thread recer = new Rec_thread(socketChannel,lock,client_side);
       Thread Thread_recer = new Thread(recer);

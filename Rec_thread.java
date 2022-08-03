@@ -25,6 +25,22 @@ public class Rec_thread implements Runnable  {
                 if(mess.equals("")){}
                 else{
                         System.out.println(mess);
+                        if(mess.trim().contains("server :")){
+                            if(mess.substring(mess.indexOf(':')+1).contains(":")){
+                            
+                            } else{
+                                String mess_1 = mess.substring(mess.indexOf(':')+1).trim();
+                                mess_1 = mess_1.substring(0,mess.indexOf(' '));
+                                System.out.println(mess_1);
+                                if (mess.contains(" join")) {
+                                    client_side.add_user(mess_1.substring(0,mess.indexOf(' ')));
+                                } else if (mess.contains(" left")){
+                                    System.out.println(mess_1);
+                                    client_side.Update_ds(mess_1);
+
+                                }
+                            }
+                        }
                         client_side.add_messages(mess);
                 }
             } catch (IOException e) {
